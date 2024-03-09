@@ -6,59 +6,76 @@ import { BiImageAlt } from "react-icons/bi";
 import { Tweet } from "@/gql/graphql";
 import Image from "next/image";
 import { useCurrentUser } from "@/hooks/user";
-import { useQueryClient } from "@tanstack/react-query";
-import { CredentialResponse } from "@react-oauth/google";
 import { graphqlClient } from "@/clients/api";
-import { verifyUserGoogleTokenQuery } from "@/graphql/query/user";
+
 import toast from "react-hot-toast";
 import { GetServerSideProps } from "next";
-import { getAllTweetsQuery } from "@/graphql/query/tweet";
+import {
+  getAllTweetsQuery,
+  getSignedURLForTweetQuery,
+} from "@/graphql/query/tweet";
+import axios from "axios";
 
 interface HomeProps {
   tweets?: Tweet[];
 }
 
 export default function Home(props: HomeProps) {
-  const { mutate } = useCreateTweet();
   const { user } = useCurrentUser();
-
-  const queryClient = useQueryClient();
+  const { tweets = props.tweets as Tweet[] } = useGetAllTweets();
+  const { mutateAsync } = useCreateTweet();
 
   const [content, setContent] = useState("");
+  const [imageURL, setImageURL] = useState("");
+
+  const handleInputChangeFile = useCallback((input: HTMLInputElement) => {
+    return async (event: Event) => {
+      event.preventDefault();
+      const file: File | null | undefined = input.files?.item(0);
+      if (!file) return;
+
+      const { getSignedURLForTweet } = await graphqlClient.request(
+        getSignedURLForTweetQuery,
+        {
+          imageName: file.name,
+          imageType: file.type,
+        }
+      );
+
+      if (getSignedURLForTweet) {
+        toast.loading("Uploading...", { id: "2" });
+        await axios.put(getSignedURLForTweet, file, {
+          headers: {
+            "Content-Type": file.type,
+          },
+        });
+        toast.success("Upload Completed", { id: "2" });
+        const url = new URL(getSignedURLForTweet);
+        const myFilePath = `${url.origin}${url.pathname}`;
+        setImageURL(myFilePath);
+      }
+    };
+  }, []);
 
   const handleSelectImage = useCallback(() => {
     const input = document.createElement("input");
     input.setAttribute("type", "file");
     input.setAttribute("accept", "image/*");
+
+    const handleFn = handleInputChangeFile(input);
+
+    input.addEventListener("change", handleFn);
     input.click();
-  }, []);
+  }, [handleInputChangeFile]);
 
-  const handleCreateTweet = useCallback(() => {
-    mutate({
+  const handleCreateTweet = useCallback(async () => {
+    await mutateAsync({
       content,
+      imageURL,
     });
-  }, [content, mutate]);
-
-  const handleLoginWithGoogle = useCallback(
-    async (cred: CredentialResponse) => {
-      const googleToken = cred.credential;
-      if (!googleToken) return toast.error("Google token not found");
-
-      const { verifyGoogleToken } = await graphqlClient.request(
-        verifyUserGoogleTokenQuery,
-        { token: googleToken }
-      );
-
-      toast.success("Verified Success");
-      console.log(verifyGoogleToken);
-
-      if (verifyGoogleToken)
-        window.localStorage.setItem("__twitter__token", verifyGoogleToken);
-
-      await queryClient.invalidateQueries({ queryKey: ["current-user"] });
-    },
-    [queryClient]
-  );
+    setContent("");
+    setImageURL("");
+  }, [mutateAsync, content, imageURL]);
 
   return (
     <div>
@@ -85,6 +102,14 @@ export default function Home(props: HomeProps) {
                   placeholder="What's Happening?"
                   rows={3}
                 ></textarea>
+                {imageURL && (
+                  <Image
+                    src={imageURL}
+                    alt="tweet-image"
+                    width={300}
+                    height={300}
+                  />
+                )}
                 <div className="mt-5 flex justify-between items-center">
                   <BiImageAlt onClick={handleSelectImage} className="text-xl" />
                   <button
@@ -98,7 +123,7 @@ export default function Home(props: HomeProps) {
             </div>
           </div>
         </div>
-        {props.tweets?.map((tweet) =>
+        {tweets?.map((tweet) =>
           tweet ? <FeedCard key={tweet?.id} data={tweet as Tweet} /> : null
         )}
       </Twitterlayout>
