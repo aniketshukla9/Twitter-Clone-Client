@@ -5,7 +5,7 @@ const nextConfig = {
     domains: [
       "avatars.githubusercontent.com",
       "lh3.googleusercontent.com",
-      "twitter-server-dev.s3.ap-south-1.amazonaws.com",
+      "twitter-server-devlop.s3.ap-south-1.amazonaws.com",
     ],
   },
 };
