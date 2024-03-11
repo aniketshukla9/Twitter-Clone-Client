@@ -54,7 +54,10 @@ const UserProfilePage: NextPage<ServerProps> = (props) => {
       <TwitterLayout>
         <div>
           <nav className="flex items-center gap-3 py-3 px-3">
-            <BsArrowLeftShort className="text-4xl" />
+            <BsArrowLeftShort
+              onClick={() => router.back()}
+              className="text-4xl"
+            />
             <div>
               <h1 className="text-2xl font-bold">
                 {props.userInfo?.firstName} {props.userInfo?.lastName}
