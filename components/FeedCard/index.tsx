@@ -1,8 +1,8 @@
-import React from "react";
+import React, { useState } from "react";
 import Image from "next/image";
 import { BiMessageRounded, BiUpload } from "react-icons/bi";
 import { FaRetweet } from "react-icons/fa";
-import { AiOutlineHeart } from "react-icons/ai";
+import { AiFillHeart, AiOutlineHeart } from "react-icons/ai";
 import { Tweet } from "@/gql/graphql";
 import Link from "next/link";
 
@@ -12,6 +12,12 @@ interface FeedCardProps {
 
 const FeedCard: React.FC<FeedCardProps> = (props) => {
   const { data } = props;
+  const [isLiked, setIsLiked] = useState(false);
+
+  const handleLikeClick = () => {
+    setIsLiked(!isLiked);
+  };
+
   return (
     <div className="border border-r-0 border-l-0 border-b-0 border-gray-600 p-5 hover:bg-slate-900 transition-all cursor-pointer ">
       <div className="grid grid-cols-12 gap-3">
@@ -43,8 +49,12 @@ const FeedCard: React.FC<FeedCardProps> = (props) => {
             <div>
               <FaRetweet />
             </div>
-            <div>
-              <AiOutlineHeart />
+            <div onClick={handleLikeClick}>
+              {isLiked ? (
+                <AiFillHeart className="text-pink-500" />
+              ) : (
+                <AiOutlineHeart />
+              )}
             </div>
             <div>
               <BiUpload />
