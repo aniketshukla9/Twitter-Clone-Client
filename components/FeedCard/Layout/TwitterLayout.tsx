@@ -144,9 +144,17 @@ const Twitterlayout: React.FC<TwitterLayoutProps> = (props) => {
             </div>
           )}
         </div>
-        <div className="col-span-10 sm:col-span-5 border-r-[1px] border-l-[1px] h-screen overflow-scroll border-gray-600">
+        <div
+          className="col-span-10 sm:col-span-5 border-r-[1px] border-l-[1px] border-gray-600"
+          style={{
+            overflowY: "scroll",
+            scrollbarWidth: "none",
+            msOverflowStyle: "none",
+          }}
+        >
           {props.children}
         </div>
+
         <div className="col-span-0 sm:col-span-3 p-5">
           {!user ? (
             <div className="p-5 bg-slate-700 rounded-lg">
@@ -155,7 +163,7 @@ const Twitterlayout: React.FC<TwitterLayoutProps> = (props) => {
             </div>
           ) : (
             <div className="px-4 py-3 bg-slate-800 rounded-lg">
-              <h1 className="my-2 text-2xl mb-5">Users you may know</h1>
+              <h1 className="my-2 text-2xl mb-5">Who to follow</h1>
               {user?.recommendedUsers?.map((el) => (
                 <div className="flex items-center gap-3 mt-2" key={el?.id}>
                   {el?.profileImageURL && (

@@ -1,5 +1,5 @@
 import { useRouter } from "next/router";
-import Twitterlayout from "@/components/FeedCard/Layout/TwitterLayout";
+import TwitterLayout from "@/components/FeedCard/Layout/TwitterLayout";
 import { GetServerSideProps, NextPage } from "next";
 import { BsArrowLeftShort } from "react-icons/bs";
 import Image from "next/image";
@@ -50,10 +50,10 @@ const UserProfilePage: NextPage<ServerProps> = (props) => {
   }, [props.userInfo?.id, queryClient]);
 
   return (
-    <div>
-      <Twitterlayout>
+    <div className="sm:p-4 md:p-8 lg:p-12">
+      <TwitterLayout>
         <div>
-          <nav className="flex items-center gap-3 py-3 px-3">
+          <nav className="flex items-center gap-3 py-3 pxx-3">
             <BsArrowLeftShort className="text-4xl" />
             <div>
               <h1 className="text-2xl font-bold">
@@ -77,24 +77,22 @@ const UserProfilePage: NextPage<ServerProps> = (props) => {
             <h1 className="text-2xl font-bold mt-5">
               {props.userInfo?.firstName} {props.userInfo?.lastName}
             </h1>
-            <div className="flex justify-between items-center">
-              <div className="flex gap-4 mt-2 text-sm text-gray-400">
-                <span>{props.userInfo?.followers?.length} followers</span>
-                <span>{props.userInfo?.following?.length} following</span>
-              </div>
+            <div className="flex flex-col sm:flex-row justify-between items-center sm:mt-2 text-sm text-gray-400">
+              <span>{props.userInfo?.followers?.length} followers</span>
+              <span>{props.userInfo?.following?.length} following</span>
               {currentUser?.id !== props.userInfo?.id && (
                 <>
                   {amIFollowing ? (
                     <button
                       onClick={handleUnfollowUser}
-                      className="bg-white text-black px-3 py-1 rounded-full text-sm "
+                      className="mt-2 sm:mt-0 bg-white text-black px-3 py-1 rounded-full text-sm "
                     >
                       Unfollow
                     </button>
                   ) : (
                     <button
                       onClick={handleFollowUser}
-                      className="bg-white text-black px-3 py-1 rounded-full text-sm "
+                      className="mt-2 sm:mt-0 bg-white text-black px-3 py-1 rounded-full text-sm "
                     >
                       Follow
                     </button>
@@ -109,7 +107,7 @@ const UserProfilePage: NextPage<ServerProps> = (props) => {
             ))}
           </div>
         </div>
-      </Twitterlayout>
+      </TwitterLayout>
     </div>
   );
 };
