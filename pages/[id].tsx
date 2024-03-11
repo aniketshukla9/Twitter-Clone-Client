@@ -50,10 +50,10 @@ const UserProfilePage: NextPage<ServerProps> = (props) => {
   }, [props.userInfo?.id, queryClient]);
 
   return (
-    <div className="sm:p-4 md:p-8 lg:p-12">
+    <div>
       <TwitterLayout>
         <div>
-          <nav className="flex items-center gap-3 py-3 pxx-3">
+          <nav className="flex items-center gap-3 py-3 px-3">
             <BsArrowLeftShort className="text-4xl" />
             <div>
               <h1 className="text-2xl font-bold">
